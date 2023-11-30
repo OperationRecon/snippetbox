@@ -35,6 +35,7 @@ func (app *application) routes() http.Handler {
 	router.Handler(http.MethodGet, "/user/login", dynamic.ThenFunc(app.userLogin))
 	router.Handler(http.MethodPost, "/user/login", dynamic.ThenFunc(app.userLoginPost))
 	router.Handler(http.MethodGet, "/ping", http.HandlerFunc(ping))
+	router.Handler(http.MethodGet, "/about", dynamic.ThenFunc(app.about))
 
 	// Chain for user-protected routes
 	protected := dynamic.Append(app.requireAuthentication)

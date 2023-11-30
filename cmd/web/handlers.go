@@ -57,6 +57,11 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	app.render(w, http.StatusOK, "home.tmpl.html", data)
 }
 
+func (app *application) about(w http.ResponseWriter, r *http.Request) {
+	// render template
+	app.render(w, http.StatusOK, "about.tmpl.html", app.newTemplateData(r))
+}
+
 // snippetView handler function
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	// get parameters from request context
