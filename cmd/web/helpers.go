@@ -14,11 +14,17 @@ import (
 
 // Help send out server error messages
 func (app *application) serverError(w http.ResponseWriter, err error) {
-	// print error message to log
+	// print error message to log or write as request response if in debug mode
+
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	app.errLog.Output(2, trace)
 
-	// respond to request with an error 500
+	// respond to request with an error 500 or err message ifin debug mode
+	if app.debugMode {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(trace))
+		return
+	}
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 
 }

@@ -27,6 +27,7 @@ type application struct {
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
 	users          models.UserModelInterface
+	debugMode      bool
 }
 
 func main() {
@@ -39,7 +40,9 @@ func main() {
 	address := flag.String("address", ":4000", "The address used to host the server")
 
 	// define MySQL DSN from cmd input
-	dsn := flag.String("DSN", "web:M4N@/snippetbox?parseTime=true", "MySQL data source name.")
+	dsn := flag.String("dsn", "web:M4N@/snippetbox?parseTime=true", "MySQL data source name.")
+
+	debugMode := flag.Bool("debug", false, "Start the server in debug mode.")
 
 	flag.Parse()
 
@@ -80,6 +83,7 @@ func main() {
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
 		users:          &models.UserModel{DB: db},
+		debugMode:      *debugMode,
 	}
 
 	// Initialize a tls.Config struct to hold the non-default TLS settings we
