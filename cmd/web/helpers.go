@@ -19,10 +19,9 @@ func (app *application) serverError(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	app.errLog.Output(2, trace)
 
-	// respond to request with an error 500 or err message ifin debug mode
+	// respond to request with an error 500 or err message if in debug mode
 	if app.debugMode {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(trace))
+		http.Error(w, trace, http.StatusInternalServerError)
 		return
 	}
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
