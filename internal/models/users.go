@@ -16,7 +16,7 @@ type User struct {
 	Name           string
 	Email          string
 	HashedPassword []byte
-	created        time.Time
+	Created        time.Time
 }
 
 type UserModel struct {
@@ -28,6 +28,7 @@ type UserModelInterface interface {
 	Insert(name, email, password string) error
 	Authenticate(email, password string) (int, error)
 	Exists(id int) (bool, error)
+	Get(id int) (*User, error)
 }
 
 func (m *UserModel) Insert(name, email, password string) error {
@@ -92,4 +93,37 @@ func (m *UserModel) Exists(id int) (bool, error) {
 
 	err := m.DB.QueryRow(stmt, id).Scan(&exists)
 	return exists, err
+}
+
+// Retreives information about an existing user
+func (m *UserModel) Get(id int) (*User, error) {
+
+	// check if user exists
+	exists, err := m.Exists(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !exists {
+		return nil, ErrNoRecord
+	}
+
+	// User exists, retrieve information
+	stmt := "SELECT name, email, created FROM users WHERE id = ?"
+
+	rw := m.DB.QueryRow(stmt, id)
+
+	user := User{
+		ID: id,
+	}
+
+	err = rw.Scan(&user.Name, &user.Email, &user.Created)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// All good? return user
+	return &user, nil
 }

@@ -19,6 +19,7 @@ type templateData struct {
 	Flash           string
 	IsAuthenticated bool
 	CSRFToken       string
+	User            *models.User
 }
 
 // formats time into a human friendly way, a method within the template.

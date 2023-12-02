@@ -236,7 +236,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 	if !form.Valid() {
 		data := app.newTemplateData(r)
 		data.Form = form
-		app.render(w, http.StatusUnprocessableEntity, "login.tmpl", data)
+		app.render(w, http.StatusUnprocessableEntity, "login.tmpl.html", data)
 		return
 	}
 
@@ -283,6 +283,29 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect the user to the application home page.
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+// View the logged in user's account
+func (app *application) accountView(w http.ResponseWriter, r *http.Request) {
+	id := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	user, err := app.users.Get(id)
+
+	if err != nil {
+		//  Check if the Error is not finding the user
+		if errors.Is(err, models.ErrNoRecord) {
+			http.Redirect(w, r, "/user/login", http.StatusNetworkAuthenticationRequired)
+			return
+		}
+		app.serverError(w, err)
+		return
+	}
+
+	// Wrtie user data into template
+	data := app.newTemplateData(r)
+	data.User = user
+
+	app.render(w, http.StatusOK, "account.tmpl.html", data)
 }
 
 func ping(w http.ResponseWriter, r *http.Request) {
