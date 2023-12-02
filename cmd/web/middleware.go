@@ -47,20 +47,17 @@ func (app *application) recoverPanic(next http.Handler) http.Handler {
 }
 
 func (app *application) requireAuthentication(next http.Handler) http.Handler {
-	// Makes sure that whoever is acessing these sites is has a user ID
-	// otherwise redirects them to the homepage
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !app.isAuthenticated(r) {
-			http.Redirect(w, r, "/user/login", http.StatusFound)
+			// Add the path that the user is trying to access to their session
+			// data.
+			app.sessionManager.Put(r.Context(), "redirectPathAfterLogin", r.URL.Path)
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 			return
 		}
 
-		// Otherwise set the "Cache-Control: no-store" header so that pages
-		// require authentication are not stored in the users browser cache (or
-		// other intermediary cache).
 		w.Header().Add("Cache-Control", "no-store")
 
-		// And call the next handler in the chain.
 		next.ServeHTTP(w, r)
 	})
 }

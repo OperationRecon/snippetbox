@@ -102,7 +102,6 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 		// For all other errors, we return them as normal.
 		return err
 	}
-	app.infoLog.Printf("%v", dst)
 	return nil
 }
 

@@ -209,7 +209,7 @@ func TestSnippetCreate(t *testing.T) {
 	t.Run("Unauthenticated", func(t *testing.T) {
 		status, header, _ := ts.get(t, "/snippet/create")
 
-		assert.Equal(t, status, http.StatusFound)
+		assert.Equal(t, status, http.StatusSeeOther)
 		assert.Equal(t, header.Get("Location"), "/user/login")
 	})
 
